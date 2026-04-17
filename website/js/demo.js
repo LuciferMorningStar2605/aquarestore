@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const API_URL = window.AQUARESTORE_API || 'http://localhost:8000';
+  const API_URL = window.AQUARESTORE_API || 'https://aquarestore.onrender.com';
 
   // DOM
   const dropZone    = document.getElementById('drop-zone');
