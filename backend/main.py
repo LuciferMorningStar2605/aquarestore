@@ -21,6 +21,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ----- Memory Optimizations for Free Tier -----
+torch.set_num_threads(1)
+
 # ----- Model Loading -----
 device = "cpu"   # Free tier: CPU only
 generator = UNetGenerator().to(device)
@@ -36,9 +39,12 @@ if not os.path.exists(WEIGHTS_PATH):
     gdown.download(id=FILE_ID, output=WEIGHTS_PATH, quiet=False)
 
 try:
-    generator.load_state_dict(
-        torch.load(WEIGHTS_PATH, map_location=device)
-    )
+    # Use mmap=True to prevent loading the entire 200MB file into RAM at once
+    weights = torch.load(WEIGHTS_PATH, map_location=device, mmap=True)
+    generator.load_state_dict(weights)
+    del weights # Free memory immediately
+    import gc; gc.collect()
+    
     generator.eval()
     print("✓ Generator loaded successfully")
 except Exception as e:
