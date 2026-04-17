@@ -1,5 +1,7 @@
 # AquaRestore 🌊
 
+**🚀 Live Demo: [https://aquarestore.vercel.app/](https://aquarestore.vercel.app/)**
+
 AquaRestore is an advanced, AI-powered underwater image restoration platform. It utilizes a custom GAN architecture (U-Net Generator + PatchGAN Discriminator) trained on the UIEB dataset to correct color distortion, haze, and low-contrast artifacts inherent in underwater photography.
 
 The project features a high-performance Python/FastAPI backend for real-time GAN inference and a cinematic, multi-page "Deep Ocean Science" frontend built with vanilla HTML/CSS/JS, featuring high-end scroll animations and interactive canvas elements.
