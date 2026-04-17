@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Demo — AquaRestore</title>
+  <meta name="description" content="Upload any underwater photograph and see AquaRestore's GAN restoration in real time."/>
+  <link rel="stylesheet" href="css/global.css"/>
+  <link rel="stylesheet" href="css/animations.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="site-nav scrolled" id="site-nav">
+    <a href="index.html" class="nav-logo">
+      <svg viewBox="0 0 28 28" fill="none"><path d="M4 18c2-3 5-5 8-5s6 2 8 5" stroke="var(--ocean-teal)" stroke-width="2" stroke-linecap="round"/><path d="M6 14c2-3 4-4 8-4s6 1 8 4" stroke="var(--ocean-teal)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/><path d="M8 10c2-2 3-3 6-3s4 1 6 3" stroke="var(--ocean-teal)" stroke-width="1" stroke-linecap="round" opacity="0.3"/></svg>
+      AquaRestore
+    </a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-hidden="true"/>
+    <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle menu"><span></span></label>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="demo.html" class="active">Demo</a>
+    </div>
+  </nav>
+
+  <!-- DEMO LAYOUT -->
+  <div class="demo-layout">
+    <!-- LEFT PANEL -->
+    <div class="demo-panel-left">
+      <span class="section-label">Restoration Engine</span>
+      <h2 style="font-size:clamp(28px,4vw,40px);margin-bottom:12px;">Upload your image</h2>
+      <p style="color:var(--text-body);margin-bottom:var(--space-lg);line-height:1.7;">Drop any underwater photograph. JPG or PNG, any resolution.</p>
+
+      <!-- Drop zone -->
+      <div id="drop-zone" class="drop-zone">
+        <svg class="drop-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="8" y="12" width="32" height="24" rx="3"/>
+          <circle cx="18" cy="24" r="4"/>
+          <path d="M8 32l10-8 6 4 8-6 8 6"/>
+          <path d="M24 4v8M20 8l4-4 4 4"/>
+        </svg>
+        <p style="font-weight:500;color:var(--text-deep);">Drop image here or click to browse</p>
+        <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">PNG, JPG up to 10 MB</p>
+      </div>
+
+      <input type="file" id="file-input" accept="image/*" style="display:none;"/>
+
+      <!-- File info -->
+      <div id="file-info" class="file-info" style="display:none;">
+        <span id="file-name"></span>
+        <button id="file-clear" title="Remove">×</button>
+      </div>
+
+      <!-- Error -->
+      <div id="error-msg" class="error-msg" style="display:none;"></div>
+
+      <!-- Submit -->
+      <button id="restore-btn" class="btn btn-primary" style="width:100%;margin-top:var(--space-md);" disabled>
+        Restore Image →
+      </button>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="demo-panel-right" style="position:relative;overflow:hidden;">
+      <canvas id="demo-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
+      <div class="bubble" style="width:8px;height:8px;top:8%;left:12%;--duration:10s;--delay:0s;"></div>
+      <div class="bubble" style="width:12px;height:12px;top:25%;left:80%;--duration:14s;--delay:2s;"></div>
+      <div class="bubble" style="width:6px;height:6px;top:60%;left:25%;--duration:11s;--delay:1s;"></div>
+      <div class="bubble" style="width:10px;height:10px;top:75%;left:60%;--duration:13s;--delay:3s;"></div>
+      <div class="bubble" style="width:8px;height:8px;top:45%;left:90%;--duration:9s;--delay:0.5s;"></div>
+      <div class="bubble" style="width:14px;height:14px;top:15%;left:45%;--duration:16s;--delay:2.5s;"></div>
+      <div class="bubble" style="width:6px;height:6px;top:85%;left:10%;--duration:12s;--delay:4s;"></div>
+      <div class="bubble" style="width:10px;height:10px;top:50%;left:5%;--duration:15s;--delay:1.5s;"></div>
+      <!-- Default state -->
+      <div id="placeholder-state" style="text-align:center;">
+        <p class="mono" style="color:var(--text-muted);margin-bottom:var(--space-md);">Example restorations</p>
+        <div class="example-grid">
+          <div class="example-thumb"><div class="ex-before"></div><div class="ex-after"></div></div>
+          <div class="example-thumb"><div class="ex-before" style="background:linear-gradient(135deg,#1a4a3e,#0d3b4e);"></div><div class="ex-after" style="background:linear-gradient(135deg,#2a9a7a,#ef8a5a);"></div></div>
+          <div class="example-thumb"><div class="ex-before" style="background:linear-gradient(135deg,#0a2a3e,#1a5c4a);"></div><div class="ex-after" style="background:linear-gradient(135deg,#3ab5a0,#f0a070);"></div></div>
+        </div>
+        <p style="color:var(--text-muted);font-size:14px;margin-top:var(--space-md);">Upload an image to see your result</p>
+      </div>
+
+      <!-- Result state (hidden initially) -->
+      <div id="result-state" style="display:none;width:100%;max-width:700px;">
+        <div class="comparison-slider" id="comparison-slider">
+          <img id="img-restored" src="" alt="Restored image"/>
+          <div class="img-overlay" id="img-overlay">
+            <img id="img-original" src="" alt="Original image"/>
+          </div>
+          <div class="slider-line" id="slider-line"></div>
+          <div class="slider-handle" id="slider-handle">⇔</div>
+          <span class="slider-label label-before">Before</span>
+          <span class="slider-label label-after">After</span>
+        </div>
+
+        <div id="result-meta" class="result-meta"></div>
+
+        <div class="result-actions" style="justify-content:center;">
+          <a id="download-btn" class="btn btn-primary" download="aquarestore_output.jpg">Download Restored</a>
+          <button id="copy-btn" class="btn btn-secondary">Copy URL</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/demo.js"></script>
+  <script src="js/reveal.js"></script>
+  <script>
+  (function(){
+    'use strict';
+    var canvas=document.getElementById('demo-canvas'); if(!canvas)return;
+    var ctx=canvas.getContext('2d'),W,H,pts=[],raf;
+    function resize(){W=canvas.width=canvas.offsetWidth;H=canvas.height=canvas.offsetHeight;}
+    function init(){resize();pts=[];var n=Math.floor(W*H/10000);for(var i=0;i<n;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-0.5)*0.7,vy:(Math.random()-0.5)*0.7,r:Math.random()*1.2+0.6});}
+    function draw(){ctx.clearRect(0,0,W,H);for(var i=0;i<pts.length;i++){var p=pts[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(8,145,178,0.25)';ctx.fill();for(var j=i+1;j<pts.length;j++){var q=pts[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<100){ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.strokeStyle='rgba(8,145,178,'+(0.07*(1-d/100))+')';ctx.lineWidth=0.4;ctx.stroke();}}}raf=requestAnimationFrame(draw);}
+    document.addEventListener('visibilitychange',function(){if(document.hidden)cancelAnimationFrame(raf);else draw();});
+    window.addEventListener('resize',init);
+    init();draw();
+  })();
+  </script>
+  <footer class="site-footer" style="padding:var(--space-lg);">
+    <div class="footer-bar" style="margin-top:0;border-top:none;padding-top:0;">
+      <span>AquaRestore — GAN-based underwater image restoration</span>
+      <div class="footer-builder">
+        <span>Built by <strong>Namish Rathy</strong></span>
+        <a href="mailto:namishrathy26@gmail.com">namishrathy26@gmail.com</a>
+        <a href="https://www.linkedin.com/in/namish-rathy/" target="_blank" rel="noopener" class="footer-linkedin">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

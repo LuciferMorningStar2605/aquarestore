@@ -1,0 +1,179 @@
+/* =========================================================
+   AquaRestore — Animations
+   Keyframes, transitions, scroll-driven motion
+   ========================================================= */
+
+/* ── Fade / Reveal system ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s var(--ease-out),
+              transform 0.8s var(--ease-out);
+  will-change: transform, opacity;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.8s var(--ease-out),
+              transform 0.8s var(--ease-out);
+  will-change: transform, opacity;
+}
+
+.reveal-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.8s var(--ease-out),
+              transform 0.8s var(--ease-out);
+  will-change: transform, opacity;
+}
+
+.reveal-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Stagger delays — used in grids */
+.stagger-1 { transition-delay: 0ms; }
+.stagger-2 { transition-delay: 150ms; }
+.stagger-3 { transition-delay: 300ms; }
+.stagger-4 { transition-delay: 450ms; }
+.stagger-5 { transition-delay: 600ms; }
+.stagger-6 { transition-delay: 750ms; }
+
+/* ── Hero entrance ── */
+.hero-tag {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: heroFadeIn 0.8s var(--ease-out) 0.2s forwards;
+}
+
+.hero-h1 {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: heroFadeIn 0.9s var(--ease-out) 0.35s forwards;
+}
+
+.hero-sub {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: heroFadeIn 0.8s var(--ease-out) 0.55s forwards;
+}
+
+.hero-actions {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: heroFadeIn 0.7s var(--ease-out) 0.7s forwards;
+}
+
+.hero-stats {
+  opacity: 0;
+  animation: heroFadeIn 0.6s var(--ease-out) 0.9s forwards;
+}
+
+@keyframes heroFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Bubble float (CTA section) ── */
+@keyframes bubbleFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translateY(-60px) scale(1.1);
+    opacity: 0.3;
+  }
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  animation: bubbleFloat var(--duration, 18s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: transform, opacity;
+}
+
+/* ── Submarine scene water bubbles ── */
+@keyframes waterBubble {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.4;
+  }
+  90% {
+    opacity: 0.15;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(20px);
+    opacity: 0;
+  }
+}
+
+.water-bubble {
+  position: absolute;
+  width: var(--size, 4px);
+  height: var(--size, 4px);
+  border-radius: 50%;
+  background: rgba(8, 145, 178, 0.3);
+  animation: waterBubble var(--dur, 12s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: transform, opacity;
+}
+
+/* ── Spinner ── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* ── Pipeline arrow pulse ── */
+@keyframes arrowPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.pipeline-arrow {
+  animation: arrowPulse 2s ease-in-out infinite;
+}
+
+/* ── Hover lift for cards ── */
+.hover-lift {
+  transition: transform 0.35s var(--ease-out),
+              box-shadow 0.35s var(--ease-out),
+              border-color 0.35s var(--ease-out);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
