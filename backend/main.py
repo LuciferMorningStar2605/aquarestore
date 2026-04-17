@@ -4,7 +4,7 @@ FastAPI Backend — serves the trained GAN generator.
 - GET  /health   → health check
 """
 
-import io, base64, torch
+import io, base64, torch, os, gdown
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -25,14 +25,24 @@ app.add_middleware(
 device = "cpu"   # Free tier: CPU only
 generator = UNetGenerator().to(device)
 
+WEIGHTS_DIR = "weights"
+WEIGHTS_PATH = os.path.join(WEIGHTS_DIR, "generator.pth")
+
+os.makedirs(WEIGHTS_DIR, exist_ok=True)
+
+if not os.path.exists(WEIGHTS_PATH):
+    print("⬇️ Weights missing. Downloading from Google Drive...")
+    FILE_ID = "140QaStpCqRW2-_IRy9aP3SnANHntxLlI"
+    gdown.download(id=FILE_ID, output=WEIGHTS_PATH, quiet=False)
+
 try:
     generator.load_state_dict(
-        torch.load("weights/generator.pth", map_location=device)
+        torch.load(WEIGHTS_PATH, map_location=device)
     )
     generator.eval()
-    print("✓ Generator loaded")
-except FileNotFoundError:
-    print("⚠ weights/generator.pth not found — train first")
+    print("✓ Generator loaded successfully")
+except Exception as e:
+    print(f"⚠ Failed to load weights: {e}")
 
 # ----- Transforms -----
 IMG_SIZE = 256
